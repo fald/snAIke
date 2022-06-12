@@ -19,17 +19,28 @@ Point = namedtuple('Point', 'x, y')
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
-RED2 = (120, 0, 0)
+RED_2 = (120, 0, 0)
 # GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
-BLUE2 = (0, 0, 128)
+BLUE_2 = (0, 0, 128)
 
 BLOCK_SIZE = 20
 SPEED = 20
+# I'm special.
+BACKGROUND_COLOR = BLACK
+SNAKE_COLOR = BLUE
+SNAKE_COLOR_OUTER = BLUE_2
+FOOD_COLOR = RED
+FOOD_COLOR_OUTER = RED_2
+TEXT_COLOR = WHITE
+# Less than half the BLOCK_SIZE
+SNAKE_OUTLINE_SIZE = 1
+FOOD_OUTLINE_SIZE = 1
+WIDTH, HEIGHT = 640, 480
 
 
 class SnakeGame:
-    def __init__(self, w, h):
+    def __init__(self, w=640, h=480):
         self.w = w
         self.h = h
         self.display = pygame.display.set_mode((self.w, self.h))
@@ -130,12 +141,41 @@ class SnakeGame:
             return True
         return False
     
-    def _move_snake(self):
-        pass
-    
+    def _move_snake(self, direction):
+        x = self.head.x
+        y = self.head.y
+        match direction:
+            case Direction.UP:
+                y -= BLOCK_SIZE
+            case Direction.DOWN:
+                y += BLOCK_SIZE
+            case Direction.LEFT:
+                x -= BLOCK_SIZE
+            case Direction.RIGHT:
+                x += BLOCK_SIZE
+        self.head = Point(x, y)
+        
     def _update_screen(self):
-        pass
+        # Clear screen
+        self.display.fill(BACKGROUND_COLOR)
+        
+        # Draw snek
+        # Different for head?
+        for point in self.snake:
+            pygame.draw.rect(self.display, SNAKE_COLOR_OUTER, pygame.Rect(point.x, point.y, BLOCK_SIZE, BLOCK_SIZE))
+            pygame.draw.rect(self.display, SNAKE_COLOR, 
+                             pygame.Rect(point.x + SNAKE_OUTLINE_SIZE, point.y + SNAKE_OUTLINE_SIZE, 
+                                         BLOCK_SIZE - 2 * SNAKE_OUTLINE_SIZE, BLOCK_SIZE - 2 * SNAKE_OUTLINE_SIZE))
+        
+        # Draw food
+        pygame.draw.rect(self.display, FOOD_COLOR_OUTER, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
+        pygame.draw.rect(self.display, FOOD_COLOR, pygame.Rect(self.food.x + FOOD_OUTLINE_SIZE, self.food.y + FOOD_OUTLINE_SIZE,))
+        
+        # Draw score and finalize the update
+        text = font.render("Score: " + str(self.score), True, TEXT_COLOR)
+        self.display.blit(text, (0, 0))
+        pygame.display.flip()
 
 
 if __name__ == "__main__":
-    pass
+    game = SnakeGame(WIDTH, HEIGHT)
