@@ -179,3 +179,11 @@ class SnakeGame:
 
 if __name__ == "__main__":
     game = SnakeGame(WIDTH, HEIGHT)
+    
+    while True:
+        game_over, score = game.play_step()
+        if game_over:
+            break
+    
+    print("Final score: " + str(score))
+    pygame.quit()
