@@ -46,15 +46,58 @@ class SnakeGame:
         self._place_food()
     
     def play_step(self):
+        # Grab input
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            # Get input - relative direction was a bad choice lmao.                
+            # This whole block can go fuck itself.
+            if event.type == pygame.KEYDOWN:
+                match event.key:
+                    case pygame.K_LEFT:
+                        match self.direction:
+                            case Direction.UP:
+                                self.direction = Direction.LEFT
+                            case Direction.DOWN:
+                                self.direction = Direction.RIGHT
+                            case Direction.LEFT:
+                                self.direction = Direction.DOWN
+                            case Direction.RIGHT:
+                                self.direction = Direction.UP
+                    case pygame.K_RIGHT:
+                        match self.direction:
+                            case Direction.UP:
+                                self.direction = Direction.RIGHT
+                            case Direction.DOWN:
+                                self.direction = Direction.LEFT
+                            case Direction.LEFT:
+                                self.direction = Direction.UP
+                            case Direction.RIGHT:
+                                self.direction = Direction.DOWN
+                    case _: # Keep on ahead, captain.
+                        pass
+                
+        # Move snake
+        # Check collision
+        # Check food
+        # Update screen and clock
+        # Return game over and score
         pass
     
     def _place_food(self):
+        # Randomly place food on the screen
+        # If intersects with snake, try again
         pass
     
     def _check_collision(self):
+        # Check if snake hits itself
+        # Check if snake hits wall
         pass
     
     def _move_snake(self):
+        
         pass
     
     def _update_screen(self):
