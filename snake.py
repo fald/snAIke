@@ -1,3 +1,4 @@
+from termios import VLNEXT
 import pygame
 from enum import Enum
 import random
@@ -35,12 +36,21 @@ class SnakeGame:
         pygame.display.set_caption("Snake")
         self.clock = pygame.time.Clock()
         
+        # No need to recalculate this every frame - not sure how much that little optimization would be worth, but I assume jack shit.
+        self.bounds = {
+            'upper': 0,
+            'lower': self.h - BLOCK_SIZE,
+            'left': 0,
+            'right': self.w - BLOCK_SIZE
+        }
+        
         self.direction = Direction.RIGHT
         self.head = Point(self.w / 2, self.h / 2)
         self.snake = [self.head,
                       Point(self.head.x - BLOCK_SIZE, self.head.y),
                       Point(self.head.x - 2 * BLOCK_SIZE, self.head.y)]
         
+        self.game_over = False
         self.score = 0
         self.food = None
         self._place_food()
@@ -52,7 +62,7 @@ class SnakeGame:
                 pygame.quit()
                 quit()
 
-            # Get input - relative direction was a bad choice lmao.                
+            # Relative direction was a bad choice lmao.                
             # This whole block can go fuck itself.
             if event.type == pygame.KEYDOWN:
                 match event.key:
@@ -80,24 +90,47 @@ class SnakeGame:
                         pass
                 
         # Move snake
+        self._move_snake(self.direction)
+        self.snake.insert(0, self.head) # Shoudl be in move?
+        
         # Check collision
+        if self._check_collision():
+            game_over = True
+            return game_over, self.score
+        
         # Check food
+        if self.food == self.head:
+            self.score += 1
+            self._place_food()
+        else:
+            self.snake.pop()
+        
         # Update screen and clock
-        # Return game over and score
-        pass
+        self._update_screen()
+        self.clock.tick(SPEED)
+        
+        return game_over, self.score
     
     def _place_food(self):
         # Randomly place food on the screen
+        # 0 - w - 1, 0 - h - 1
+        x = random.randint(0, (self.w - BLOCK_SIZE) / BLOCK_SIZE) * BLOCK_SIZE
+        y = random.randint(0, (self.h - BLOCK_SIZE) / BLOCK_SIZE) * BLOCK_SIZE
+        self.food = Point(x, y)
         # If intersects with snake, try again
-        pass
+        if self.food in self.snake:
+            self._place_food()
     
     def _check_collision(self):
         # Check if snake hits itself
+        if self.head in self.snake[1:]:
+            return True
         # Check if snake hits wall
-        pass
+        if self.head.x > self.bounds['right'] or self.head.x < self.bounds['left'] or self.head.y > self.bounds['lower'] or self.head.y < self.bounds['upper']:
+            return True
+        return False
     
     def _move_snake(self):
-        
         pass
     
     def _update_screen(self):
