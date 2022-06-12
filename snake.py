@@ -61,7 +61,6 @@ class SnakeGame:
                       Point(self.head.x - BLOCK_SIZE, self.head.y),
                       Point(self.head.x - 2 * BLOCK_SIZE, self.head.y)]
         
-        self.game_over = False
         self.score = 0
         self.food = None
         self._place_food()
@@ -108,6 +107,8 @@ class SnakeGame:
         if self._check_collision():
             game_over = True
             return game_over, self.score
+        else:
+            game_over = False
         
         # Check food
         if self.food == self.head:
@@ -169,7 +170,9 @@ class SnakeGame:
         
         # Draw food
         pygame.draw.rect(self.display, FOOD_COLOR_OUTER, pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE))
-        pygame.draw.rect(self.display, FOOD_COLOR, pygame.Rect(self.food.x + FOOD_OUTLINE_SIZE, self.food.y + FOOD_OUTLINE_SIZE,))
+        pygame.draw.rect(self.display, FOOD_COLOR, 
+                         pygame.Rect(self.food.x + FOOD_OUTLINE_SIZE, self.food.y + FOOD_OUTLINE_SIZE, 
+                                     BLOCK_SIZE - 2 * FOOD_OUTLINE_SIZE, BLOCK_SIZE - 2 * FOOD_OUTLINE_SIZE))
         
         # Draw score and finalize the update
         text = font.render("Score: " + str(self.score), True, TEXT_COLOR)
