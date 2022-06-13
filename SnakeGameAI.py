@@ -38,7 +38,7 @@ FOOD_OUTLINE_SIZE = 4
 WIDTH, HEIGHT = 640, 480
 
 
-class SnakeGame:
+class SnakeGameAI:
     def __init__(self, w=640, h=480):
         self.w = w
         self.h = h
