@@ -45,8 +45,8 @@ FOOD_REWARD_GROWTH = 0
 # Is surviving good? Not without improvement.
 IDLE_REWARD = -0.1
 IDLE_REWARD_GROWTH = -0.01
-# Per snake length.
-CUTOFF_POINT = 200
+# In frames per snake length.
+CUTOFF_POINT = 100
 
 
 class SnakeGameAI:
@@ -85,6 +85,8 @@ class SnakeGameAI:
                 pygame.quit()
                 quit()
                 
+        self.frame_iteration += 1
+        
         # Move snake
         self._move_snake(action)
         self.snake.insert(0, self.head) # Should be in move?
@@ -112,7 +114,7 @@ class SnakeGameAI:
         self._update_screen()
         self.clock.tick(SPEED)
         
-        return game_over, self.score
+        return reward, game_over, self.score
     
     def _place_food(self):
         # Randomly place food on the screen
@@ -124,12 +126,14 @@ class SnakeGameAI:
         if self.food in self.snake:
             self._place_food()
     
-    def _check_collision(self):
+    def _check_collision(self, point=None):
+        if point is None:
+            point = self.head
         # Check if snake hits itself
-        if self.head in self.snake[1:]:
+        if point in self.snake[1:]:
             return True
         # Check if snake hits wall
-        if self.head.x > self.bounds['right'] or self.head.x < self.bounds['left'] or self.head.y > self.bounds['lower'] or self.head.y < self.bounds['upper']:
+        if point.x > self.bounds['right'] or point.x < self.bounds['left'] or point.y > self.bounds['lower'] or point.y < self.bounds['upper']:
             return True
         return False
     
