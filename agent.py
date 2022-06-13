@@ -11,7 +11,11 @@ ALPHA = 0.001 # Learning rate
 
 class Agent:
     def __init__(self):
-        pass
+        self.number_of_games = 0
+        self.epsilon = 0 # Random control
+        self.gamma = 0 # Discount rate
+        self.memory = deque(maxlen=MAX_MEMORY)
+        # TODO: Model and trainer
     
     def get_state(self, game):
         pass
