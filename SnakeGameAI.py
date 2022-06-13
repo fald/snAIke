@@ -65,6 +65,7 @@ class SnakeGameAI:
         self.score = 0
         self.food = None
         self._place_food()
+        self.frame_iteration = 0
         
     def play_step(self):
         # Grab input
