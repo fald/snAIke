@@ -7,7 +7,9 @@ from snake_game_ai import BLOCK_SIZE, SnakeGameAI, Direction, Point
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 ALPHA = 0.001 # Learning rate
-
+RANDOM_MAX = 100
+# >= 0
+RANDOM_MIN = 1
 
 class Agent:
     def __init__(self):
@@ -86,7 +88,19 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, game_over)
     
     def get_action(self, state):
-        pass
+        # Random moves - exploration, versus the exploitation of a trained model.
+        self.epsilon = max(RANDOM_MAX - self.mumber_of_games, RANDOM_MIN) / 100.0
+        final_move = [0, 0, 0]
+        if random.random() < self.epsilon:
+            move = random.randint(0, 2)
+            final_move[move] = 1
+        else:
+            state_0 = torch.tensor(state, dtype=torch.float)
+            prediction = self.model.predict(state_0)
+            move = torch.argmax(prediction).item()
+            final_move[move] = 1 # Decided
+            
+        return final_move
 
 
 def train():
