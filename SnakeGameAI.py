@@ -184,13 +184,3 @@ class SnakeGameAI:
         text = font.render("Score: " + str(self.score), True, TEXT_COLOR)
         self.display.blit(text, (0, 0))
         pygame.display.flip()
-
-
-if __name__ == "__main__":
-    game = SnakeGameAI(WIDTH, HEIGHT)
-    
-    while True:
-        game_over, score = game.play_step()
-        if game_over:
-            print("Final score: " + str(score))
-            game.reset()
