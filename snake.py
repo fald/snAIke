@@ -1,4 +1,3 @@
-from termios import VLNEXT
 import pygame
 from enum import Enum
 import random
