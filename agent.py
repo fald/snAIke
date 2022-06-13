@@ -70,7 +70,7 @@ class Agent:
         return np.array(state, dtype=int) # dtype=int helps with bools to be 0 or 1
     
     def remember(self, state, action, reward, next_state, game_over):
-        pass
+        self.memory.append((state, action, reward, next_state, game_over))
         
     def train_long_memory(self):
         pass
