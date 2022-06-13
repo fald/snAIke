@@ -37,6 +37,17 @@ SNAKE_OUTLINE_SIZE = 3
 FOOD_OUTLINE_SIZE = 4
 WIDTH, HEIGHT = 640, 480
 
+# Reward tweaking.
+FAIL_REWARD = -10
+FAIL_REWARD_GROWTH = 0
+FOOD_REWARD = 10
+FOOD_REWARD_GROWTH = 0
+# Is surviving good? Not without improvement.
+IDLE_REWARD = -0.1
+IDLE_REWARD_GROWTH = -0.01
+# Per snake length.
+CUTOFF_POINT = 200
+
 
 class SnakeGameAI:
     def __init__(self, w=640, h=480):
@@ -67,56 +78,31 @@ class SnakeGameAI:
         self._place_food()
         self.frame_iteration = 0
         
-    def play_step(self):
-        # Grab input
+    def play_step(self, action):
+        # Close game if needs be
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if (event.type == pygame.QUIT) or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 pygame.quit()
                 quit()
-
-            # Relative direction was a bad choice lmao.                
-            # This whole block can go fuck itself.
-            if event.type == pygame.KEYDOWN:
-                match event.key:
-                    case pygame.K_ESCAPE:
-                        pygame.quit()
-                        quit()
-                    case pygame.K_LEFT:
-                        match self.direction:
-                            case Direction.UP:
-                                self.direction = Direction.LEFT
-                            case Direction.DOWN:
-                                self.direction = Direction.RIGHT
-                            case Direction.LEFT:
-                                self.direction = Direction.DOWN
-                            case Direction.RIGHT:
-                                self.direction = Direction.UP
-                    case pygame.K_RIGHT:
-                        match self.direction:
-                            case Direction.UP:
-                                self.direction = Direction.RIGHT
-                            case Direction.DOWN:
-                                self.direction = Direction.LEFT
-                            case Direction.LEFT:
-                                self.direction = Direction.UP
-                            case Direction.RIGHT:
-                                self.direction = Direction.DOWN
-                    case _: # Keep on ahead, captain.
-                        pass
                 
         # Move snake
-        self._move_snake(self.direction)
-        self.snake.insert(0, self.head) # Shoudl be in move?
+        self._move_snake(action)
+        self.snake.insert(0, self.head) # Should be in move?
+
+        reward = 0
         
         # Check collision
-        if self._check_collision():
+        if self._check_collision() or (self.frame_iteration > CUTOFF_POINT * len(self.snake)): # Gives more time before death on each collection.
+            reward += FAIL_REWARD * (FAIL_REWARD_GROWTH * self.score)
             game_over = True
             return game_over, self.score
         else:
+            reward += IDLE_REWARD * self.frame_iteration
             game_over = False
         
         # Check food
         if self.food == self.head:
+            reward += FOOD_REWARD * (FOOD_REWARD_GROWTH * self.score) # first one's free, baby.
             self.score += 1
             self._place_food()
         else:
@@ -147,7 +133,7 @@ class SnakeGameAI:
             return True
         return False
     
-    def _move_snake(self, direction):
+    def _move_snake(self, action):
         x = self.head.x
         y = self.head.y
         match direction:
