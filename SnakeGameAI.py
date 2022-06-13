@@ -95,7 +95,7 @@ class SnakeGameAI:
         reward = 0
         
         # Check collision
-        if self._check_collision() or (self.frame_iteration > CUTOFF_POINT * len(self.snake)): # Gives more time before death on each collection.
+        if self.check_collision() or (self.frame_iteration > CUTOFF_POINT * len(self.snake)): # Gives more time before death on each collection.
             reward += FAIL_REWARD * (FAIL_REWARD_GROWTH * self.score)
             game_over = True
             return game_over, self.score
@@ -127,7 +127,7 @@ class SnakeGameAI:
         if self.food in self.snake:
             self._place_food()
     
-    def _check_collision(self, point=None):
+    def check_collision(self, point=None):
         if point is None:
             point = self.head
         # Check if snake hits itself
