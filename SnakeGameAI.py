@@ -2,6 +2,7 @@ import pygame
 from enum import Enum
 import random
 from collections import namedtuple
+# import numpy as np
 
 pygame.init()
 font = pygame.font.Font("fonts/arial.ttf", 25)
@@ -138,9 +139,19 @@ class SnakeGameAI:
         return False
     
     def _move_snake(self, action):
+        # action = [straight, right, left], sum(action) = 1, this isn't weighted like it will/might be in the agent's eyes.
+        # At least this is a better way than I did in the user-input version!
+        clockwise_directions = (Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP)
+        curr_index = clockwise_directions.index(self.direction)
+        # Can use np.array_equal here, but I'm not sure if it's worth it.
+        if action[1]:
+            self.direction = clockwise_directions[(curr_index + 1) % 4]
+        elif action[2]:
+            self.direction = clockwise_directions[(curr_index - 1) % 4]
+        
         x = self.head.x
         y = self.head.y
-        match direction:
+        match self.direction:
             case Direction.UP:
                 y -= BLOCK_SIZE
             case Direction.DOWN:
