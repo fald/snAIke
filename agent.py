@@ -2,7 +2,7 @@ import torch
 import random
 import numpy as np
 from collections import deque
-from snake_game_ai import SnakeGameAI, Direction, Point
+from snake_game_ai import BLOCK_SIZE, SnakeGameAI, Direction, Point
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
@@ -18,7 +18,56 @@ class Agent:
         # TODO: Model and trainer
     
     def get_state(self, game):
-        pass
+        head = game.snake.head
+        point_left = Point(head.x - BLOCK_SIZE, head.y)
+        point_right = Point(head.x + BLOCK_SIZE, head.y)
+        point_up = Point(head.x, head.y - BLOCK_SIZE)
+        point_down = Point(head.x, head.y + BLOCK_SIZE) # Some DS3 disrespect.
+        
+        # Only 1 can be true
+        dir_left = game.direction == Direction.LEFT
+        dir_right = game.direction == Direction.RIGHT
+        dir_up = game.direction == Direction.UP
+        dir_down = game.direction == Direction.DOWN 
+        
+        # The state of the game, woo.
+        # 11 vars: 
+        #   danger straight, left, and right (3)
+        #   current direction in absolute terms (4)
+        #   food location, in absolute terms (4)
+        state = [
+            # Danger ahead
+            (dir_right and game.check_collision(point_right)) 
+            or (dir_left and game.check_collision(point_left))
+            or (dir_up and game.check_collision(point_up))
+            or (dir_down and game.check_collision(point_down)),
+            
+            # Danger to the rel right
+            (dir_left and game.check_collision(point_up))
+            or (dir_down and game.check_collision(point_left))
+            or (dir_up and game.check_collision(point_right))
+            or (dir_right and game.check_collision(point_down)),
+            
+            # Danger to the rel left
+            (dir_right and game.check_collision(point_up))
+            or (dir_down and game.check_collision(point_right))
+            or (dir_up and game.check_collision(point_left))
+            or (dir_left and game.check_collision(point_down)),
+            
+            # Current direction
+            dir_left,
+            dir_right,
+            dir_up,
+            dir_down,
+            
+            # Food location
+            game.food.x < game.head.x, # Food to the left
+            game.food.x > game.head.x, # Food to the right
+            game.food.y < game.head.y, # Food above
+            game.food.y > game.head.y, # Food below 
+        ]
+        
+        return np.array(state, dtype=int) # dtype=int helps with bools to be 0 or 1
     
     def remember(self, state, action, reward, next_state, game_over):
         pass
@@ -59,7 +108,7 @@ def train():
         agent.remember(state_old, final_move, rewards, state_new, game_over)
         
         if game_over:
-            # train the long (or 'replay' or 'experienced replay') memory
+            # train the long (or 'replay' or 'experience replay') memory
             # plot the results
             game.reset()
             agent.number_of_games += 1
