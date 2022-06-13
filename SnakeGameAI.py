@@ -20,7 +20,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 RED_2 = (120, 0, 0)
 # GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+BLUE = (50, 50, 255)
 BLUE_2 = (0, 0, 128)
 
 BLOCK_SIZE = 20
@@ -53,17 +53,19 @@ class SnakeGameAI:
             'left': 0,
             'right': self.w - BLOCK_SIZE
         }
-        
+        # Initialize game state 
+        self.reset()
+    
+    def reset(self):
         self.direction = Direction.RIGHT
         self.head = Point(self.w / 2, self.h / 2)
         self.snake = [self.head,
                       Point(self.head.x - BLOCK_SIZE, self.head.y),
                       Point(self.head.x - 2 * BLOCK_SIZE, self.head.y)]
-        
         self.score = 0
         self.food = None
         self._place_food()
-    
+        
     def play_step(self):
         # Grab input
         for event in pygame.event.get():
@@ -75,6 +77,9 @@ class SnakeGameAI:
             # This whole block can go fuck itself.
             if event.type == pygame.KEYDOWN:
                 match event.key:
+                    case pygame.K_ESCAPE:
+                        pygame.quit()
+                        quit()
                     case pygame.K_LEFT:
                         match self.direction:
                             case Direction.UP:
@@ -180,12 +185,10 @@ class SnakeGameAI:
 
 
 if __name__ == "__main__":
-    game = SnakeGame(WIDTH, HEIGHT)
+    game = SnakeGameAI(WIDTH, HEIGHT)
     
     while True:
         game_over, score = game.play_step()
         if game_over:
-            break
-    
-    print("Final score: " + str(score))
-    pygame.quit()
+            print("Final score: " + str(score))
+            game.reset()
