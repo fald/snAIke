@@ -18,7 +18,7 @@ class Agent:
         # TODO: Model and trainer
     
     def get_state(self, game):
-        head = game.snake.head
+        head = game.head
         point_left = Point(head.x - BLOCK_SIZE, head.y)
         point_right = Point(head.x + BLOCK_SIZE, head.y)
         point_up = Point(head.x, head.y - BLOCK_SIZE)
