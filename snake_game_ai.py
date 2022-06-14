@@ -44,8 +44,8 @@ FAIL_REWARD_GROWTH = 0
 FOOD_REWARD = 10
 FOOD_REWARD_GROWTH = 0
 # Is surviving good? Not without improvement.
-IDLE_REWARD = -0.1
-IDLE_REWARD_GROWTH = -0.01
+IDLE_REWARD = -0.01
+IDLE_REWARD_GROWTH = -0.00001
 # In frames per snake length.
 CUTOFF_POINT = 100
 
@@ -98,7 +98,7 @@ class SnakeGameAI:
         if self.check_collision() or (self.frame_iteration > CUTOFF_POINT * len(self.snake)): # Gives more time before death on each collection.
             reward += FAIL_REWARD * (FAIL_REWARD_GROWTH * self.score)
             game_over = True
-            return game_over, self.score
+            return reward, game_over, self.score
         else:
             reward += IDLE_REWARD * self.frame_iteration
             game_over = False
