@@ -92,7 +92,7 @@ class Agent:
     
     def get_action(self, state):
         # Random moves - exploration, versus the exploitation of a trained model.
-        self.epsilon = max(RANDOM_MAX - self.mumber_of_games, RANDOM_MIN) / 100.0
+        self.epsilon = max(RANDOM_MAX - self.number_of_games, RANDOM_MIN) / 100.0
         final_move = [0, 0, 0]
         if random.random() < self.epsilon:
             move = random.randint(0, 2)
