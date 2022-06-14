@@ -16,3 +16,8 @@ class Linear_QNetwork(nn.Module):
         x = self.linear2(x) # No need for an activation function here, just use the raw value.
         return x
 
+    def save(self, filename="model.pth", model_folder_path="./model"):
+        if not os.path.exists(model_folder_path):
+            os.makedirs(model_folder_path)
+        torch.save(self.state_dict(), os.path.join(model_folder_path, filename))
+            
