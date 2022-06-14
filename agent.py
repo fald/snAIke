@@ -3,6 +3,7 @@ import random
 import numpy as np
 from collections import deque
 from snake_game_ai import BLOCK_SIZE, SnakeGameAI, Direction, Point
+from model import Linear_QNetwork, QTrainer
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
@@ -12,13 +13,14 @@ RANDOM_MAX = 100
 RANDOM_MIN = 1
 
 class Agent:
-    def __init__(self):
+    def __init__(self, model_vals=(11, 256, 3)):
         self.number_of_games = 0
         self.epsilon = 0 # Random control
-        self.gamma = 0 # Discount rate
+        self.gamma = 0.9 # Discount rate
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = None
-        self.trainer = None
+        # Model vals are just the input, hidden, and output sizes.
+        self.model = Linear_QNetwork(*model_vals)
+        self.trainer = QTrainer(self.model, alpha=ALPHA, gamma=self.gamma)
     
     def get_state(self, game):
         head = game.head
