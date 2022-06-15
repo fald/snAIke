@@ -38,7 +38,7 @@ class QTrainer:
         # Should be able to handle single or multiple inputs.
         state = torch.tensor(state, dtype=torch.float)
         next_state = torch.tensor(next_state, dtype=torch.float)
-        action = torch.tensor(action, dtype=torch.float)
+        action = torch.tensor(action, dtype=torch.long)
         reward = torch.tensor(reward, dtype=torch.float)
         # If multiple inputs, size is (n, x) with n = batch size
         # otherwise, size is (x)
