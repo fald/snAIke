@@ -22,7 +22,8 @@ class Linear_QNetwork(nn.Module):
         torch.save(self.state_dict(), os.path.join(model_folder_path, filename))
         
     def load(self, filename="model.pth", model_folder_path="./model"):
-        pass
+        if os.path.exists(os.path.join(model_folder_path, filename)):
+            self.load_state_dict(torch.load(os.path.join(model_folder_path, filename)))
     
     
 class QTrainer:

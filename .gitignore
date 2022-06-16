@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# OG code to test my garbage fire against.
+original-tutorial-code/

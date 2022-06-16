@@ -25,7 +25,7 @@ BLUE = (50, 50, 255)
 BLUE_2 = (0, 0, 128)
 
 BLOCK_SIZE = 20
-SPEED = 20
+SPEED = 80
 # I'm special.
 BACKGROUND_COLOR = BLACK
 SNAKE_COLOR = BLUE
@@ -44,8 +44,8 @@ FAIL_REWARD_GROWTH = 0
 FOOD_REWARD = 10
 FOOD_REWARD_GROWTH = 0
 # Is surviving good? Not without improvement.
-IDLE_REWARD = -0.01
-IDLE_REWARD_GROWTH = -0.00001
+IDLE_REWARD = 0
+IDLE_REWARD_GROWTH = 0
 # In frames per snake length.
 CUTOFF_POINT = 100
 
@@ -100,12 +100,12 @@ class SnakeGameAI:
             game_over = True
             return reward, game_over, self.score
         else:
-            reward += IDLE_REWARD * self.frame_iteration
+            # reward += IDLE_REWARD * self.frame_iteration
             game_over = False
         
         # Check food
         if self.food == self.head:
-            reward += FOOD_REWARD * (FOOD_REWARD_GROWTH * self.score) # first one's free, baby.
+            reward += FOOD_REWARD + (FOOD_REWARD_GROWTH * self.score)
             self.score += 1
             self._place_food()
         else:
@@ -144,9 +144,9 @@ class SnakeGameAI:
         clockwise_directions = (Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP)
         curr_index = clockwise_directions.index(self.direction)
         # Can use np.array_equal here, but I'm not sure if it's worth it.
-        if action[1]:
+        if action[1]: # Right
             self.direction = clockwise_directions[(curr_index + 1) % 4]
-        elif action[2]:
+        elif action[2]: # Left
             self.direction = clockwise_directions[(curr_index - 1) % 4]
         
         x = self.head.x
